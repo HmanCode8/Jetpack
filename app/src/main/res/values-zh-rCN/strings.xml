@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Gis管理系统</string>
+    <string name="btn_cancel">取消</string>
+    <string name="btn_back">返回</string>
+    <string name="btn_confirm">提交</string>
+
+    <!--settings-->
+    <string name="settings_title">我的设置</string>
+    <string name="mode_title">模式切换</string>
+    <string name="mode_online">在线</string>
+    <string name="mode_offline">离线</string>
+    <string name="menu_dataLog">数据操作日志</string>
+    <string name="menu_userLayer">用户自定义图层</string>
+    <string name="menu_offlineData">离线数据管理</string>
+    <string name="menu_contact">联系我们</string>
+    <string name="menu_logout">退出登录</string>
+
+<!--    操作日志-->
+    <string name="action_reset">重置</string>
+    <string name="search_button">搜索</string>
+
+
+    <!--    query-panel-->
+    <string name="panel_query_title">查询</string>
+    <string name="panel_advanced">进阶查询</string>
+    <string name="panel_valve">阀门查询</string>
+    <string name="panel_water_mains">水管查询</string>
+
+    <string name="panel_result_title">查詢結果</string>
+
+    <!--    gis-panel-->
+    <string name="panel_gis_title">GIS功能</string>
+    <string name="panel_change_symbology">修改符号</string>
+    <string name="panel_highlight">高亮</string>
+
+    <string name="panel_gis_symbology_select_layer"> 图层选择</string>
+    <string name="panel_gis_symbology_setting">符号设置</string>
+    <string name="panel_gis_symbology_default_btn">重置系统默认</string>
+    <string name="panel_gis_symbology_temp_btn">保存为临时</string>
+
+    <!--    task-panel-->
+    <string name="panel_task_title">任务</string>
+    <string name="panel_vicp">VICP</string>
+    <string name="panel_pipeline_tracing">上游和下游水管追踪</string>
+    <string name="panel_population_analysis">人口分析</string>
+
+    <!--    地图面板-->
+    <string name="basemap_layer_list">图层列表</string>
+    <string name="basemap_title">底图</string>
+    <string name="basemap_ver">矢量</string>
+    <string name="basemap_img">卫星</string>
+    <string name="basemap_mountain">地形</string>
+</resources>

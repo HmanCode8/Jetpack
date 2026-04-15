@@ -73,15 +73,12 @@
 
         val isActive = remember { mutableStateOf(0) }
 
-        Box(
-            modifier = Modifier.padding(20.dp)
+        Row (
+            modifier = Modifier.padding(20.dp).width(200.dp).background(Color.White, shape = RoundedCornerShape(25.dp))
 
         ) {
-            Column(
-                modifier = Modifier.clip(shape = RoundedCornerShape(25.dp)),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Box(modifier = Modifier.background(Color.White)) {
+
+                Box(modifier = Modifier.fillMaxWidth()) {
                     // 1. 圆形头像
                     Column(
                         modifier = Modifier
@@ -112,7 +109,7 @@
                     // 2. 菜单条
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center,
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier
                             .align(Alignment.CenterStart) // 靠左
                             .padding(start = 50.dp)
@@ -141,9 +138,6 @@
     //                VerticalDivider(color = Color.Gray, modifier = Modifier.height(40.dp))
                     val atEnd by remember { mutableStateOf(false) }
                 }
-
-            }
-
 
         }
         Row(modifier = Modifier.padding(top = 80.dp, start = 30.dp)) {
