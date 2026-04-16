@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MGIS</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_back">Back</string>
+    <string name="btn_ok">OK</string>
+    <string name="btn_confirm">Confirm</string>
+
+
+
+    <string name="settings_title">My Settings</string>
+    <string name="mode_title">Mode Switch</string>
+    <string name="mode_online">Online</string>
+    <string name="mode_offline">Offline</string>
+    <string name="menu_dataLog">Data Operation Log</string>
+    <string name="menu_userLayer">User-Defined Layer</string>
+    <string name="menu_offlineData">Offline Data Management</string>
+    <string name="menu_contact">Contact</string>
+    <string name="menu_logout">Log out</string>
+
+    <string name="log_title">operation log</string>
+    <string name="search_button">Search</string>
+    <string name="action_reset">Reset</string>
+
+
+    <!--    query-panel-->
+    <string name="panel_query_title">Search</string>
+    <string name="panel_advanced">Advanced Search</string>
+    <string name="panel_valve">Valve</string>
+    <string name="panel_water_mains">Water Mains</string>
+    <string name="panel_result_title">Search Result</string>
+
+    <!--    gis-panel-->
+    <string name="panel_gis_title">GIS Function</string>
+    <string name="panel_change_symbology">Change Symbology</string>
+    <string name="panel_highlight">Highlight</string>
+
+    <string name="panel_gis_symbology_select_layer"> Select layer</string>
+    <string name="panel_gis_symbology_setting">Change Symbology</string>
+    <string name="panel_gis_symbology_default_btn">Return To System Default</string>
+    <string name="panel_gis_symbology_temp_btn">Save As Temporary</string>
+
+    <!--    task-panel-->
+    <string name="panel_task_title">Task</string>
+    <string name="panel_vicp">VICP</string>
+    <string name="panel_pipeline_tracing">Upstream And Downstream Pipeline Tracing</string>
+    <string name="panel_population_analysis">Population Analysis</string>
+
+
+    <!--    地图面板-->
+    <string name="basemap_layer_list">Layer List</string>
+    <string name="basemap_title">Base map</string>
+    <string name="basemap_ver">Vector</string>
+    <string name="basemap_img">Satellite</string>
+    <string name="basemap_mountain">Mountain</string>
+</resources>

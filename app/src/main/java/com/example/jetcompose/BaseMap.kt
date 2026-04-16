@@ -44,6 +44,7 @@ import com.example.jetcompose.components.Panel
 import com.example.jetcompose.components.RightTool
 import com.example.jetcompose.components.UserSetting
 import com.example.jetcompose.untils.MChildren
+import com.example.jetcompose.untils.MapToolsUntil
 import com.example.jetcompose.untils.TianDiTuLayer
 import es.dmoral.toasty.Toasty
 import es.dmoral.toasty.Toasty.LENGTH_SHORT
@@ -88,18 +89,25 @@ fun BaseMapView() {
         AndroidView(
             factory = { context ->
                 MapView(context).apply {
-                    // 初始化天地图
+                    // 你的原有逻辑 ↓↓↓ 完全不动
                     val vecLayer = TianDiTuLayer.createImgLayer()
                     val cvaLayer = TianDiTuLayer.createCvaLayer()
                     val basemap = Basemap(vecLayer)
                     basemap.referenceLayers.add(cvaLayer)
                     val map = ArcGISMap(basemap)
-                    Toasty.success(context, "初始化成功", Toast.LENGTH_SHORT).show()
                     this.map = map
-                    // 定位到 Hk
                     this.setViewpoint(Viewpoint(22.3193, 114.1694, 100000.0))
                     this.isAttributionTextVisible = false
+
+                    // ==============================================
+                    // 🔥🔥🔥 就在这里绑定！初始化地图时自动绑定
+                    // ==============================================
+                    MapToolsUntil.bindMapView(this)
                 }
+            },
+            // 页面销毁时自动清空
+            onRelease = {
+                MapToolsUntil.clearMapView()
             },
             modifier = Modifier.fillMaxSize()
         )
@@ -129,6 +137,7 @@ fun BaseMapView() {
         BottomBar(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
+                .padding(10.dp)
                 .fillMaxWidth()
         )
         RightTool(

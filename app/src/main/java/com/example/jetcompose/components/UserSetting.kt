@@ -60,7 +60,7 @@ fun UserSetting(
     val modeActive = remember { mutableStateOf(1) }
     Box(
         modifier = Modifier
-            .width(200.dp)
+            .width(250.dp)
             .padding(top = 80.dp, start = 20.dp)
             .background(
                 brush = Brush.verticalGradient(
