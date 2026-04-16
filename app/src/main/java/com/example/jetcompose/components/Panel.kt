@@ -41,14 +41,19 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.jetcompose.R
 import com.example.jetcompose.components.Panels.DataOperationLog
+import com.example.jetcompose.untils.LocaleUtils
 import com.example.jetcompose.untils.MChildren
+import com.example.jetcompose.untils.stringResourceByName
+import es.dmoral.toasty.Toasty
 
 
 @Composable
@@ -57,7 +62,6 @@ fun Panel(
     onClose: () -> Unit,
 ) {
     val isExpand = remember { mutableStateOf(true) }
-
     Box(
         modifier = Modifier
             .widthIn(200.dp, 300.dp)
@@ -84,7 +88,10 @@ fun Panel(
                         .height(40.dp)
                         .padding(5.dp, 0.dp)
                 ) {
-                    Text(text = menuValue.label, modifier = Modifier.align(Alignment.Center))
+                    Text(
+                        text = stringResourceByName(menuValue.label),
+                        modifier = Modifier.align(Alignment.Center)
+                    )
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "关闭",
@@ -97,23 +104,8 @@ fun Panel(
                                 onClose()
                             })
                 }
-                when (menuValue.label) {
-                    "Advance Search" -> Text(
-                        menuValue.label,
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .border(1.dp, Color.Red),
-                        fontSize = 14.sp
-                    )
-
-                    "Data Operation" -> DataOperationLog()
-
-                    "1-3" -> Text(
-                        menuValue.label,
-                        modifier = Modifier.padding(16.dp),
-                        fontSize = 14.sp
-                    )
-
+                when (stringResourceByName(menuValue.label)) {
+                    stringResource(R.string.menu_dataLog) -> DataOperationLog()
                     else -> Text("未知面板", modifier = Modifier.padding(16.dp), fontSize = 14.sp)
                 }
             }
@@ -143,5 +135,5 @@ fun Panel(
 @Preview
 @Composable
 fun PanelPreview() {
-    Panel(MChildren("Data Operation", "1121"), {})
+    Panel(MChildren("menu_dataLog", "1121"), {})
 }

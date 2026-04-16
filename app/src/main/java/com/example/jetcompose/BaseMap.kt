@@ -2,31 +2,20 @@ package com.example.jetcompose
 
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
-
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,6 +32,7 @@ import com.example.jetcompose.components.MenuView
 import com.example.jetcompose.components.Panel
 import com.example.jetcompose.components.RightTool
 import com.example.jetcompose.components.UserSetting
+import com.example.jetcompose.untils.LocaleUtils
 import com.example.jetcompose.untils.MChildren
 import com.example.jetcompose.untils.MapToolsUntil
 import com.example.jetcompose.untils.TianDiTuLayer
@@ -52,6 +42,7 @@ import es.dmoral.toasty.Toasty.LENGTH_SHORT
 
 class BaseMap : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        LocaleUtils.setLanguage(this, LocaleUtils.currentLang)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -134,6 +125,7 @@ fun BaseMapView() {
                 )
             }
         }
+
         BottomBar(
             modifier = Modifier
                 .align(Alignment.BottomCenter)

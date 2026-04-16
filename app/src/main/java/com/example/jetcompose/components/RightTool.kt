@@ -30,12 +30,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.jetcompose.R
 import com.example.jetcompose.untils.MapToolsUntil
+import com.example.jetcompose.untils.getDrawable
 import es.dmoral.toasty.Toasty
 
-data class IconItem(
-    val name: String,
-    val id: String
-)
+
 @Composable
 fun RightTool(modifier: Modifier = Modifier) {
 val contentNow = LocalContext.current
@@ -55,11 +53,10 @@ val contentNow = LocalContext.current
             tools.value.forEach { t->
                 Spacer(modifier= Modifier.height(5.dp))
 
-                val iconName = contentNow.resources.getIdentifier("tool_${t}","drawable",contentNow.packageName)
                 Icon(
-                    painter = painterResource(iconName),
+                    painter =painterResource( getDrawable("tool_${t}")),
                     contentDescription = "layer",
-                    tint = Color.Gray,
+                    tint = Color(0xFF7289a6),
                     modifier= Modifier.size(30.dp).padding(3.dp,5.dp).clickable{
                         Toasty.info(contentNow,t).show()
                     },
@@ -73,11 +70,6 @@ val contentNow = LocalContext.current
         ) {
             tools1.value.forEach {t->
 
-                val iconName = contentNow.resources.getIdentifier(
-                    "tool_${t}",
-                    "drawable",
-                    contentNow.packageName
-                )
                 Spacer(modifier= Modifier.height(5.dp))
                 Row(
                     horizontalArrangement = Arrangement.Center,
@@ -92,8 +84,8 @@ val contentNow = LocalContext.current
                         }
                 ) {
                     Icon(
-                        painter = painterResource(iconName),
-                        tint = Color.Gray,
+                        painter =painterResource( getDrawable("tool_${t}")),
+                        tint = Color(0xFF7289a6),
                         contentDescription = "11",
                         modifier = Modifier.padding(3.dp, 5.dp)
                     )

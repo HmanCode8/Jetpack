@@ -3,7 +3,7 @@
     <string name="app_name">MGIS</string>
     <string name="btn_cancel">取消</string>
     <string name="btn_back">返回</string>
-    <string name="btn_ok">確定</string>
+    <string name="btn_ok">确定</string>
     <string name="btn_confirm">提交</string>
 
     <string name="settings_title">我的設定</string>

@@ -4,8 +4,8 @@ import com.esri.arcgisruntime.layers.WebTiledLayer
 
 object TianDiTuLayer {
 
-    private const val TDT_KEY = "17ee5b9a9338f882a3f1cbcf55409a0f"
-//    private const val TDT_KEY = "1"
+//    private const val TDT_KEY = "17ee5b9a9338f882a3f1cbcf55409a0f"
+    private const val TDT_KEY = "1"
 
     // 天地图服务子域
     private val subDomains = listOf("t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7")

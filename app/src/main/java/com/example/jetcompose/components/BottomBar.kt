@@ -21,6 +21,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.jetcompose.R
+import com.example.jetcompose.untils.AppGlobalState
+import com.example.jetcompose.untils.LocaleUtils
+import com.example.jetcompose.untils.stringResourceByName
 
 @Composable
 fun BottomBar(modifier: Modifier = Modifier) {
@@ -38,7 +41,7 @@ fun BottomBar(modifier: Modifier = Modifier) {
                 modifier = Modifier.size(20.dp),
                 contentDescription = "logo"
             )
-            Text(text = stringResource(R.string.app_name), modifier = Modifier.padding(5.dp, 0.dp))
+            Text(text = stringResourceByName("app_name"), modifier = Modifier.padding(5.dp, 0.dp))
             Text(
                 text = "UAT",
                 modifier = Modifier
@@ -51,6 +54,10 @@ fun BottomBar(modifier: Modifier = Modifier) {
             verticalAlignment = Alignment.CenterVertically,
 
             ) {
+            Text(
+                text = stringResourceByName(AppGlobalState.currentMode.value), color = Color.Gray,
+                modifier= Modifier.padding(2.dp,0.dp)
+            )
             Text(
                 text = "1:1000",
                 modifier = Modifier
