@@ -3,7 +3,7 @@ package com.example.jetcompose.untils
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-
+@Suppress("DEPRECATION", "DiscouragedApi")
 fun Context.getStringByName(name: String): String {
     val resId = resources.getIdentifier(name, "string", packageName)
     return if (resId != 0) getString(resId) else name
@@ -17,6 +17,7 @@ fun stringResourceByName(name: String): String {
     return context.getStringByName(name)
 }
 
+@Suppress("DEPRECATION", "DiscouragedApi")
 @Composable
 fun getDrawable(name: String): Int{
     val context = LocalContext.current

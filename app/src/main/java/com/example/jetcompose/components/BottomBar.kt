@@ -54,15 +54,21 @@ fun BottomBar(modifier: Modifier = Modifier) {
             verticalAlignment = Alignment.CenterVertically,
 
             ) {
-            Text(
-                text = stringResourceByName(AppGlobalState.currentMode.value), color = Color.Gray,
-                modifier= Modifier.padding(2.dp,0.dp)
+            Icon(
+                painter = painterResource(if (AppGlobalState.currentMode.value == "mode_online") R.drawable.online else R.drawable.offline),
+                tint = Color(if (AppGlobalState.currentMode.value == "mode_online") 0xFF01b680 else 0xFF657e9c),
+                contentDescription = "mode",
+                modifier= Modifier.size(20.dp).padding(3.dp,0.dp)
             )
+//            Text(
+//                text = stringResourceByName(AppGlobalState.currentMode.value), color = Color.Gray,
+//                modifier= Modifier.padding(3.dp,0.dp)
+//            )
             Text(
-                text = "1:1000",
+                text = "1:${AppGlobalState.currentScale.value}",
                 modifier = Modifier
-                    .background(Color.Gray, shape = RoundedCornerShape(3.dp))
-                    .padding(3.dp, 0.dp)
+                    .background(Color.White, shape = RoundedCornerShape(3.dp))
+                    .padding(3.dp)
             )
 //            Icon(imageVector = Icons.Default.Place, contentDescription = "system_name")
         }

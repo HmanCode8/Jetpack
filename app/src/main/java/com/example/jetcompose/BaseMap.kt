@@ -2,23 +2,29 @@ package com.example.jetcompose
 
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 
 import androidx.compose.ui.viewinterop.AndroidView
@@ -28,6 +34,7 @@ import com.esri.arcgisruntime.mapping.Basemap
 import com.esri.arcgisruntime.mapping.Viewpoint
 import com.esri.arcgisruntime.mapping.view.MapView
 import com.example.jetcompose.components.BottomBar
+import com.example.jetcompose.components.LayerManagement
 import com.example.jetcompose.components.MenuView
 import com.example.jetcompose.components.Panel
 import com.example.jetcompose.components.RightTool
@@ -38,6 +45,7 @@ import com.example.jetcompose.untils.MapToolsUntil
 import com.example.jetcompose.untils.TianDiTuLayer
 import es.dmoral.toasty.Toasty
 import es.dmoral.toasty.Toasty.LENGTH_SHORT
+import kotlin.math.roundToInt
 
 
 class BaseMap : ComponentActivity() {
@@ -62,7 +70,7 @@ fun initMapConfig() {
     val licenseResult = ArcGISRuntimeEnvironment.setLicense(
         "runtimelite,1000,rud9878094479,none,9TJC7XLS1MM0J9HSX236"  // 替换成你的 License Key
     )
-    android.util.Log.d("License", "授权结果: ${licenseResult.licenseStatus}")
+    Log.d("License", "授权结果: ${licenseResult.licenseStatus}")
 }
 
 @Composable
@@ -81,10 +89,10 @@ fun BaseMapView() {
             factory = { context ->
                 MapView(context).apply {
                     // 你的原有逻辑 ↓↓↓ 完全不动
-                    val vecLayer = TianDiTuLayer.createImgLayer()
-                    val cvaLayer = TianDiTuLayer.createCvaLayer()
+//                    val vecLayer = TianDiTuLayer.createImgLayer()
+                    val vecLayer = TianDiTuLayer.createHKBaseMapLayer()
                     val basemap = Basemap(vecLayer)
-                    basemap.referenceLayers.add(cvaLayer)
+//                    basemap.referenceLayers.add(cvaLayer)
                     val map = ArcGISMap(basemap)
                     this.map = map
                     this.setViewpoint(Viewpoint(22.3193, 114.1694, 100000.0))
@@ -115,7 +123,7 @@ fun BaseMapView() {
         }
         //左边菜单面板
         // 先缓存状态到局部变量，避免并发修改
-        Column(modifier = Modifier.align(Alignment.CenterStart)) {
+        Column(modifier = Modifier.align(Alignment.CenterStart).freeDrag()) {
             activeMenu.value?.let { currentMenu ->
                 Panel(
                     menuValue = currentMenu, // 直接传缓存的局部变量
@@ -134,18 +142,41 @@ fun BaseMapView() {
         )
         RightTool(
             modifier = Modifier
-                .padding(end = 10.dp)
                 .align(Alignment.CenterEnd)
+                .padding(end = 10.dp)
+        )
+        LayerManagement(
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 50.dp)
+                .freeDrag()
         )
         if (mySetting.value) UserSetting { data ->
             val currentMenu = data as? MChildren<*>
             activeMenu.value = currentMenu
             mySetting.value = false
         }
-
     }
 }
 
+
+// 自由拖动 Modifier
+@Composable
+fun Modifier.freeDrag(): Modifier = this.then(
+    remember {
+        val offsetX = mutableStateOf(0f)
+        val offsetY = mutableStateOf(0f)
+
+        Modifier
+            .offset { IntOffset(offsetX.value.roundToInt(), offsetY.value.roundToInt()) }
+            .pointerInput(Unit) {
+                detectDragGestures { _, dragAmount ->
+                    offsetX.value += dragAmount.x
+                    offsetY.value += dragAmount.y
+                }
+            }
+    }
+)
 @Preview
 @Composable
 fun Preview() {

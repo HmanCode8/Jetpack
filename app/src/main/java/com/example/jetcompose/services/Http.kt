@@ -13,10 +13,12 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.io.IOException
 
+val cookieC = "Authorization=895d849a-9d25-4dbe-92ce-1aa3e8614208; DIP_ACCESS_TOKEN=eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiIwYjQ3ZTQ0MzI5MDY0OTI2YmY0MDNjN2ZiOWRlODUyMyIsInN1YiI6IjE3NzY0MjAzMTkzNzYifQ.8rWj3OqRnrlaUJqYWJBOjjpTH3G-bqLzStqsKBKN49WMRDw8nk2ls4WzdLPaeLk0rmqLH4Tzt46l_BeeNYbKwg; Admin-Token=895d849a-9d25-4dbe-92ce-1aa3e8614208"
 object Http {
     private val client = OkHttpClient()
 
-    private val baseUrl = "http://172.31.150.23:3000"
+//    private val baseUrl = "http://172.31.150.23:3000"
+    private val baseUrl = "http://10.11.228.247:9101"
     private val mainHandler = Handler(Looper.getMainLooper())
     private val gson = GsonBuilder()
         .setLenient()          // 宽松模式，兼容非标准 JSON
@@ -59,11 +61,13 @@ object Http {
         val json = gson.toJson(payLoad)
         val body = json.toRequestBody(JSON_MEDIA_TYPE)
 
-        val request = Request.Builder()
+        val requestBuild = Request.Builder()
             .url(newUrl)
             .post(body)
-            .build()
 
+        requestBuild.addHeader("Cookie",cookieC)
+
+        val request = requestBuild.build()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 callback(false, e.message ?: "请求失败")

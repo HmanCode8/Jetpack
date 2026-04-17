@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.jetcompose.R
 import com.example.jetcompose.components.Panels.DataOperationLog
+import com.example.jetcompose.components.Panels.UserDefinedLayer
 import com.example.jetcompose.untils.LocaleUtils
 import com.example.jetcompose.untils.MChildren
 import com.example.jetcompose.untils.stringResourceByName
@@ -106,6 +107,7 @@ fun Panel(
                 }
                 when (stringResourceByName(menuValue.label)) {
                     stringResource(R.string.menu_dataLog) -> DataOperationLog()
+                    stringResource(R.string.menu_userLayer) -> UserDefinedLayer()
                     else -> Text("未知面板", modifier = Modifier.padding(16.dp), fontSize = 14.sp)
                 }
             }
@@ -135,5 +137,5 @@ fun Panel(
 @Preview
 @Composable
 fun PanelPreview() {
-    Panel(MChildren("menu_dataLog", "1121"), {})
+    Panel(MChildren("menu_userLayer", "1121"), {})
 }

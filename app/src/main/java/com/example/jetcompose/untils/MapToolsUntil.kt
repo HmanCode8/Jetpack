@@ -1,5 +1,6 @@
 package com.example.jetcompose.untils
 
+import android.util.Log
 import com.esri.arcgisruntime.mapping.view.MapView
 import com.esri.arcgisruntime.mapping.Viewpoint
 import java.lang.ref.WeakReference
@@ -12,6 +13,10 @@ object MapToolsUntil {
     // 🔥 你要的：地图初始化时绑定一次
     fun bindMapView(mapView: MapView) {
         mapViewRef = WeakReference(mapView)
+        mapView.addMapScaleChangedListener {
+            val s = mapView.mapScale.toInt()
+            AppGlobalState.currentScale.value = s
+        }
         // 可选：默认打开定位蓝点
 //        mapView.locationDisplay.isEnabled = true
     }

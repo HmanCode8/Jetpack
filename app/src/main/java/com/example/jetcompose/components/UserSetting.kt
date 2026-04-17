@@ -28,6 +28,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -113,7 +114,7 @@ fun UserSetting(
                 Text("Hi Admin", color = Color(0xFF616161), fontSize = 10.sp)
             }
             Row(modifier = Modifier.padding(vertical = 5.dp)) {
-                Text("My Setting", color = Color(0xFF616161), fontSize = 10.sp)
+                Text(stringResourceByName("settings_title"), color = Color(0xFF616161), fontSize = 10.sp)
             }
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -133,7 +134,7 @@ fun UserSetting(
                                 .height(25.dp)
                                 .background(
                                     color = Color(
-                                        if (languageActive.value == v.key) 0xFF0091ea else 0xFFa9aaaa
+                                        if (languageActive.value == v.key) 0xFF0091ea else 0xFFF4F6F9
                                     ),
                                     shape = RoundedCornerShape(2.dp)
                                 )
@@ -163,21 +164,30 @@ fun UserSetting(
                                 .height(25.dp)
                                 .background(
                                     color = Color(
-                                        if (fontSizeActive.value == index + 1) 0xFF0091ea else 0xFFa9aaaa
+                                        if (fontSizeActive.value == index + 1) 0xFF0091ea else 0xFFF4F6F9
                                     ),
                                     shape = RoundedCornerShape(2.dp)
                                 )
                                 .clickable {
                                     fontSizeActive.value = index + 1
+
+//                                    AppGlobalState.currentFontScale.value = when (index) {
+//                                        0 -> 16.sp
+//                                        1 -> 12.sp
+//                                        else -> 10.sp
+//                                    }
                                 }
                         ) {
                             Text(
                                 text = f,
                                 textAlign = TextAlign.Center,
                                 color = if (fontSizeActive.value == index + 1) Color.White else Color.Black,
-                                fontSize = 12.sp,
-
-                                )
+                                fontSize = when (index) {
+                                    0 -> 16.sp
+                                    1 -> 12.sp
+                                    else -> 10.sp
+                                }
+                            )
                         }
 
                     }
@@ -199,17 +209,17 @@ fun UserSetting(
                     if (index != 0) Spacer(modifier = Modifier.width(20.dp))
                     Text(
                         text = stringResourceByName(mode.label),
-                        color = if ( AppGlobalState.currentMode.value == mode.label) Color.White else Color.Black,
+                        color = if (AppGlobalState.currentMode.value == mode.label) Color.White else Color.Black,
                         modifier = Modifier
                             .background(
-                                Color(if ( AppGlobalState.currentMode.value == mode.label) 0xFF0091ea else 0xFFF4F6F9),
+                                Color(if (AppGlobalState.currentMode.value == mode.label) 0xFF0091ea else 0xFFF4F6F9),
                                 shape = RoundedCornerShape(4.dp)
                             )
                             .padding(5.dp)
                             .clickable {
-                                if (mode.label == "mode_offline"){
+                                if (mode.label == "mode_offline") {
                                     showDialog.value = true
-                                }else{
+                                } else {
                                     AppGlobalState.currentMode.value = mode.label
                                 }
                             }
@@ -441,16 +451,16 @@ fun Modal(
 @Composable
 @Preview
 fun PreviewUIser() {
-//    UserSetting({})
+    UserSetting({})
     val showDialog = remember { mutableStateOf(true) }
-    Modal(
-        {
-            showDialog.value = false
-
-        },
-        { data ->
-            showDialog.value = false
-            println("data--" + data)
-        }
-    )
+//    Modal(
+//        {
+//            showDialog.value = false
+//
+//        },
+//        { data ->
+//            showDialog.value = false
+//            println("data--" + data)
+//        }
+//    )
 }
