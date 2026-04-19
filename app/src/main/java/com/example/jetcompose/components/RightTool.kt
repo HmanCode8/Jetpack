@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -39,7 +40,7 @@ fun RightTool(modifier: Modifier = Modifier,callback:(key: String)-> Unit) {
 val contentNow = LocalContext.current
     val tools = remember { mutableStateOf(listOf("tuceng","ceju","draw","shuxing","qingchu"))}
     val tools1 = remember { mutableStateOf(listOf("zhibeizhen","shangyibu","xiayibu","fangda","suoxiao","dingwei"))}
-
+    val activeTool = remember { mutableStateOf("") }
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -56,9 +57,10 @@ val contentNow = LocalContext.current
                 Icon(
                     painter =painterResource( getDrawable("tool_${t}")),
                     contentDescription = "layer",
-                    tint = Color(0xFF7289a6),
-                    modifier= Modifier.size(30.dp).padding(3.dp,5.dp).clickable{
+                    tint = Color(if (activeTool.value == t)0xFF3f8fe3 else 0xFF7289a6),
+                    modifier= Modifier.size(30.dp).padding(3.dp,5.dp).scale(if (activeTool.value == t)1.2f else 1f).clickable{
                         callback(t)
+                        activeTool.value = t
                         Toasty.info(contentNow,t).show()
                     },
                 )
