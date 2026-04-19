@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.jetcompose.R
 import com.example.jetcompose.components.Panels.DataOperationLog
+import com.example.jetcompose.components.Panels.OfflineDataManagement
 import com.example.jetcompose.components.Panels.UserDefinedLayer
 import com.example.jetcompose.untils.LocaleUtils
 import com.example.jetcompose.untils.MChildren
@@ -65,7 +66,7 @@ fun Panel(
     val isExpand = remember { mutableStateOf(true) }
     Box(
         modifier = Modifier
-            .widthIn(200.dp, 300.dp)
+            .widthIn(0.dp, 400.dp)
             .height(500.dp)
             .padding(start = 5.dp)
     ) {
@@ -108,6 +109,7 @@ fun Panel(
                 when (stringResourceByName(menuValue.label)) {
                     stringResource(R.string.menu_dataLog) -> DataOperationLog()
                     stringResource(R.string.menu_userLayer) -> UserDefinedLayer()
+                    stringResource(R.string.menu_offlineData) -> OfflineDataManagement()
                     else -> Text("未知面板", modifier = Modifier.padding(16.dp), fontSize = 14.sp)
                 }
             }

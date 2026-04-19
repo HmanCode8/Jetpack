@@ -35,7 +35,7 @@ import es.dmoral.toasty.Toasty
 
 
 @Composable
-fun RightTool(modifier: Modifier = Modifier) {
+fun RightTool(modifier: Modifier = Modifier,callback:(key: String)-> Unit) {
 val contentNow = LocalContext.current
     val tools = remember { mutableStateOf(listOf("tuceng","ceju","draw","shuxing","qingchu"))}
     val tools1 = remember { mutableStateOf(listOf("zhibeizhen","shangyibu","xiayibu","fangda","suoxiao","dingwei"))}
@@ -58,6 +58,7 @@ val contentNow = LocalContext.current
                     contentDescription = "layer",
                     tint = Color(0xFF7289a6),
                     modifier= Modifier.size(30.dp).padding(3.dp,5.dp).clickable{
+                        callback(t)
                         Toasty.info(contentNow,t).show()
                     },
                 )
@@ -103,5 +104,6 @@ fun  Preview(){
     RightTool(
         modifier = Modifier
             .padding(end = 10.dp)
+        ,{}
     )
 }

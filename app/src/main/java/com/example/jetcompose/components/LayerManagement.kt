@@ -2,7 +2,9 @@ package com.example.jetcompose.components
 
 import android.app.Activity
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,9 +39,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,43 +51,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.jetcompose.R
 import com.example.jetcompose.services.Http
+import com.example.jetcompose.services.MockData
 import com.example.jetcompose.untils.BaseResponse
+import com.example.jetcompose.untils.LayerItem
+import com.example.jetcompose.untils.LayerResponse
+import com.example.jetcompose.untils.LayerWrap
+import com.example.jetcompose.untils.getDrawable
+import com.example.jetcompose.untils.stringResourceByName
 import es.dmoral.toasty.Toasty
 import okhttp3.Response
 
 // 最外层响应
-data class LayerResponse(
-    val code: Int,
-    val msg: String,
-    val data: List<LayerItem>,
-    val error: Boolean,
-    val success: Boolean
-)
 
-// 每一个图层项（支持无限层级 children）
-data class LayerItem(
-    val id: Int?,
-    val parentId: Int?,
-    val type: String?,
-    val name: String?,
-    val code: String?,
-    val serviceUrl: String?,
-    val sort: Int?,
-    val layerType: String?,
-    val shapeType: String?,
-    val layerId: Int?,
-    val dataBase: String?,
-    val tableName: String?,
-    val children: List<LayerItem>?  // 🔥 嵌套自己，支持无限层级
-)
-// 用来给 LayerItem 加勾选、展开状态
-data class LayerWrap(
-    val item: LayerItem,       // 原始数据
-    var isChecked: Boolean = false, // 勾选
-    var isExpanded: Boolean = false // 展开
-)
 @Composable
-fun LayerManagement(modifier: Modifier = Modifier) {
+fun LayerManagement(modifier: Modifier = Modifier, onClose: () -> Unit) {
     val searchKey = remember { mutableStateOf("") }
     val baseMaps = listOf(Icons.Default.Search, Icons.Default.Info, Icons.Default.Home)
     val currentContent = LocalContext.current
@@ -104,6 +85,7 @@ fun LayerManagement(modifier: Modifier = Modifier) {
                 layerList.value = d?.data ?: emptyList()
                 Toasty.success(currentContent, "获取成功").show()
             } else {
+                layerList.value = MockData.layerData
                 Toasty.warning(currentContent, "请求失败").show()
             }
         }
@@ -128,31 +110,39 @@ fun LayerManagement(modifier: Modifier = Modifier) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Base Map", fontSize = 10.sp)
+                Text(text = stringResourceByName("basemap_title"), fontSize = 10.sp)
                 Icon(
                     Icons.Default.Close,
                     contentDescription = "close",
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier
+                        .size(20.dp)
+                        .clickable {
+                            onClose()
+                        }
                 )
             }
             Spacer(modifier = Modifier.height(10.dp))
             Row() {
+                val ac = remember { mutableStateOf(0) }
                 baseMaps.forEachIndexed { index, b ->
                     if (index != 0) {
                         Spacer(modifier = Modifier.width(5.dp))
                     }
                     Row(
                         modifier = Modifier
-                            .size(30.dp)
-                            .background(
-                                brush = Brush.verticalGradient(
-                                    0.5f to Color(0xFF4381B6),
-                                    0.5f to Color(0xFF4381B6)
-                                ),
-                                shape = RoundedCornerShape(3.dp)
-                            )
-
-                    ) { }
+                            .size(35.dp).clickable{
+ac.value = index
+                            }
+                    ) {
+                        Image(
+                            painter = painterResource(getDrawable("type${index + 1}")),
+                            contentScale = ContentScale.FillHeight,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(3.dp))
+                                .border(if (ac.value == index) 2.dp else 1.dp, if (ac.value == index) Color(0xFF3f8fe3) else Color.LightGray),
+                            contentDescription = "map${index + 1}"
+                        )
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(10.dp))
@@ -161,7 +151,7 @@ fun LayerManagement(modifier: Modifier = Modifier) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Layer List", fontSize = 10.sp)
+                Text(text = stringResourceByName("basemap_layer_list"), fontSize = 10.sp)
                 Icon(
                     Icons.Default.Refresh,
                     contentDescription = "fresh",
@@ -187,7 +177,7 @@ fun LayerManagement(modifier: Modifier = Modifier) {
             }
             Row() {
                 val newList = layerList.value.map {
-                    LayerWrap(it,isChecked = false,isExpanded = false)
+                    LayerWrap(it, isChecked = false, isExpanded = false)
                 }
                 LayerTreeView(newList)
 
@@ -276,23 +266,23 @@ fun TreeItemNode(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-            if (!hasChildren) {
-                Icon(
-                    painter = painterResource(R.drawable.tool_tuceng),
-                    contentDescription = "layer",
-                    tint = Color(0xFF0692ea),
-                    modifier = Modifier.size(16.dp)
+                if (!hasChildren) {
+                    Icon(
+                        painter = painterResource(R.drawable.tool_tuceng),
+                        contentDescription = "layer",
+                        tint = Color(0xFF0692ea),
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+
+                Text(
+                    text = item.name ?: "未知",
+                    fontSize = 10.sp,
+                    modifier = Modifier.padding(start = 3.dp)
                 )
             }
-
-            Text(
-                text = item.name ?: "未知",
-                fontSize = 10.sp,
-                modifier = Modifier.padding(start = 3.dp)
-            )
-            }
-            Checkbox(checked = layerWrap.isChecked,onCheckedChange = {
-                Log.d("chek","${item}")
+            Checkbox(checked = layerWrap.isChecked, onCheckedChange = {
+                Log.d("chek", "${item}")
             }, modifier = Modifier.size(16.dp))
         }
     }
@@ -308,5 +298,5 @@ fun TreeItemNode(
 @Composable
 @Preview
 fun LayerManagementPre() {
-    LayerManagement()
+    LayerManagement(modifier = Modifier, {})
 }

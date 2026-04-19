@@ -6,26 +6,42 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 import androidx.compose.ui.viewinterop.AndroidView
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment
@@ -43,6 +59,7 @@ import com.example.jetcompose.untils.LocaleUtils
 import com.example.jetcompose.untils.MChildren
 import com.example.jetcompose.untils.MapToolsUntil
 import com.example.jetcompose.untils.TianDiTuLayer
+import com.example.jetcompose.untils.stringResourceByName
 import es.dmoral.toasty.Toasty
 import es.dmoral.toasty.Toasty.LENGTH_SHORT
 import kotlin.math.roundToInt
@@ -77,6 +94,8 @@ fun initMapConfig() {
 fun BaseMapView() {
     val currentContent = LocalContext.current
     val activeMenu = remember { mutableStateOf<MChildren<*>?>(null) }
+    val contactIshShow = remember { mutableStateOf(false) }
+    val layerListIsShow =remember { mutableStateOf(false) }
     val mySetting = remember { mutableStateOf(false) }
     initMapConfig()
     Box(
@@ -89,10 +108,11 @@ fun BaseMapView() {
             factory = { context ->
                 MapView(context).apply {
                     // 你的原有逻辑 ↓↓↓ 完全不动
-//                    val vecLayer = TianDiTuLayer.createImgLayer()
-                    val vecLayer = TianDiTuLayer.createHKBaseMapLayer()
+                    val vecLayer = TianDiTuLayer.createImgLayer()
+                    val cvaLayer = TianDiTuLayer.createCvaLayer()
+//                    val vecLayer = TianDiTuLayer.createHKBaseMapLayer()
                     val basemap = Basemap(vecLayer)
-//                    basemap.referenceLayers.add(cvaLayer)
+                    basemap.referenceLayers.add(cvaLayer)
                     val map = ArcGISMap(basemap)
                     this.map = map
                     this.setViewpoint(Viewpoint(22.3193, 114.1694, 100000.0))
@@ -107,8 +127,7 @@ fun BaseMapView() {
             // 页面销毁时自动清空
             onRelease = {
                 MapToolsUntil.clearMapView()
-            },
-            modifier = Modifier.fillMaxSize()
+            }, modifier = Modifier.fillMaxSize()
         )
         //左上角菜单栏
         MenuView { menuItem, type ->
@@ -123,7 +142,11 @@ fun BaseMapView() {
         }
         //左边菜单面板
         // 先缓存状态到局部变量，避免并发修改
-        Column(modifier = Modifier.align(Alignment.CenterStart).freeDrag()) {
+        Column(
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .freeDrag()
+        ) {
             activeMenu.value?.let { currentMenu ->
                 Panel(
                     menuValue = currentMenu, // 直接传缓存的局部变量
@@ -143,22 +166,72 @@ fun BaseMapView() {
         RightTool(
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .padding(end = 10.dp)
+                .padding(end = 10.dp),
+            {k->
+                if (k == "tuceng"){
+                layerListIsShow.value = !layerListIsShow.value
+            }
+            }
         )
-        LayerManagement(
+        if (layerListIsShow.value)LayerManagement(
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .padding(end = 50.dp)
-                .freeDrag()
+                .freeDrag(),
+            {
+                layerListIsShow.value = false
+            }
         )
+        if (contactIshShow.value) Contact(Modifier.align(Alignment.Center), {
+            contactIshShow.value = false
+        })
         if (mySetting.value) UserSetting { data ->
+            Log.d("oooo", "${data}")
             val currentMenu = data as? MChildren<*>
-            activeMenu.value = currentMenu
-            mySetting.value = false
+            if (currentMenu?.isMenu ?: false) {
+                activeMenu.value = currentMenu
+                mySetting.value = false
+            } else {
+                contactIshShow.value = ! contactIshShow.value
+            }
+
         }
     }
 }
 
+@Composable
+fun Contact(modifier: Modifier = Modifier, onClose: () -> Unit) {
+    Column(
+        modifier
+            .background(Color.White, shape = RoundedCornerShape(3.dp))
+            .padding(5.dp)
+            .width(200.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = stringResourceByName("menu_contact"))
+            Icon(
+                Icons.Default.Close,
+                contentDescription = "close",
+                Modifier
+                    .size(15.dp)
+                    .background(Color.LightGray, CircleShape)
+                    .padding(2.dp)
+                    .clickable {
+                        onClose()
+                    }
+            )
+        }
+        Row(Modifier.padding(0.dp,10.dp)) {
+            Text(
+                text = "if you have any question please call 234442 or 134ee@.com", fontSize = 12.sp
+            )
+        }
+    }
+}
 
 // 自由拖动 Modifier
 @Composable
@@ -175,10 +248,12 @@ fun Modifier.freeDrag(): Modifier = this.then(
                     offsetY.value += dragAmount.y
                 }
             }
-    }
-)
+    })
+
+
 @Preview
 @Composable
 fun Preview() {
-    BaseMapView()
+//    BaseMapView()
+    Contact(Modifier,{})
 }

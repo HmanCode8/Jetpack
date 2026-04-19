@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.jetcompose.R
+import com.example.jetcompose.services.MockData
 import com.example.jetcompose.untils.AppGlobalState
 import com.example.jetcompose.untils.LocaleUtils
 import com.example.jetcompose.untils.MChildren
@@ -114,7 +115,11 @@ fun UserSetting(
                 Text("Hi Admin", color = Color(0xFF616161), fontSize = 10.sp)
             }
             Row(modifier = Modifier.padding(vertical = 5.dp)) {
-                Text(stringResourceByName("settings_title"), color = Color(0xFF616161), fontSize = 10.sp)
+                Text(
+                    stringResourceByName("settings_title"),
+                    color = Color(0xFF616161),
+                    fontSize = 10.sp
+                )
             }
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -302,63 +307,7 @@ fun Modal(
 ) {
 
     val regionData = remember {
-        mutableStateOf(
-            listOf(
-                // 第一组：HKI
-                RegionGroup(
-                    groupName = "HKI",
-                    groupId = "HKI",
-                    count = 4,
-                    children = listOf(
-                        RegionItem("D1", "D1", parentGroup = "HKI"),
-                        RegionItem("D2", "D2", parentGroup = "HKI"),
-                        RegionItem("D3", "D3", parentGroup = "HKI"),
-                        RegionItem("D4", "D4", parentGroup = "HKI"),
-                        RegionItem("D5", "D5", parentGroup = "HKI")
-                    )
-                ),
-
-                // 第二组：NTE
-                RegionGroup(
-                    groupName = "NTE",
-                    groupId = "NTE",
-                    count = 4,
-                    children = listOf(
-                        RegionItem("D1", "D1", parentGroup = "NTE"),
-                        RegionItem("D2", "D2", parentGroup = "NTE"),
-                        RegionItem("D3", "D3", parentGroup = "NTE"),
-                        RegionItem("D4", "D4", parentGroup = "NTE")
-                    )
-                ),
-
-                // 第三组：NTW
-                RegionGroup(
-                    groupName = "NTW",
-                    groupId = "NTW",
-                    count = 5,
-                    children = listOf(
-                        RegionItem("D1", "D1", parentGroup = "NTW"),
-                        RegionItem("D2", "D2", parentGroup = "NTW"),
-                        RegionItem("D3", "D3", parentGroup = "NTW"),
-                        RegionItem("D4", "D4", parentGroup = "NTW"),
-                        RegionItem("D5", "D5", parentGroup = "NTW")
-                    )
-                ),
-
-                // 第四组：K
-                RegionGroup(
-                    groupName = "K",
-                    groupId = "K",
-                    count = 4,
-                    children = listOf(
-                        RegionItem("D1", "D1", parentGroup = "K"),
-                        RegionItem("D2", "D2", parentGroup = "K"),
-                        RegionItem("D3", "D3", parentGroup = "K"),
-                        RegionItem("D4", "D4", parentGroup = "K")
-                    )
-                )
-            )
-        )
+        mutableStateOf(MockData.regionData)
     }
     Dialog(onDismissRequest = { onClose() }) {
         Column(

@@ -2,12 +2,15 @@ package com.example.jetcompose.components
 
 import android.content.Context
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -29,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.jetcompose.R
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.example.jetcompose.untils.LocaleUtils
@@ -82,7 +86,8 @@ fun MenuView(
     Row(
         modifier = Modifier
             .padding(20.dp)
-            .width(200.dp)
+            .width(220.dp)
+            .height(50.dp)
             .background(Color.White, shape = RoundedCornerShape(25.dp))
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
@@ -120,26 +125,43 @@ fun MenuView(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
+                    .fillMaxHeight()
                     .align(Alignment.CenterStart) // 靠左
                     .padding(start = 50.dp)
                     .background(Color.White)
-                    .padding(5.dp)
             ) {
                 menuList.value.forEachIndexed { index, m ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center,
                         modifier = Modifier
-                            .padding(horizontal = 8.dp, vertical = 5.dp)
+                            .height(45.dp)
+                            .width(50.dp)
+                            .padding(2.dp)
+                            .background(
+                                // 统一全部用 Brush 类型，if 整体返回一个 Brush，不再内部写 brush=
+                                brush = if (isActive.value == m.id) {
+                                    Brush.verticalGradient(
+                                        // 这里粘贴回你原本的所有渐变颜色参数
+                                        0.2f to Color(0xFFebf5fe),
+                                        0.4f to Color(0xFFebf5fe),
+                                        0.4f to Color(0xFFf3f8fc)
+                                    )
+                                } else {
+                                    // 白色纯色 转成 SolidColor Brush，和上面分支类型完全统一
+                                    SolidColor(Color.White)
+                                },
+                                shape = RoundedCornerShape(size = 2.dp)
+                            )
                             .clickable() {
                                 isActive.value = if (isActive.value == m.id) 0 else m.id
                                 childMenus.value = m.children
                             }
                     ) {
                         Icon(
-                            tint =Color( if (isActive.value == m.id) 0xFF0092e0 else 0xFF7289a6),
+                            tint = Color(if (isActive.value == m.id) 0xFF0092e0 else 0xFF7289a6),
                             painter = painterResource(m.icon),
-                            contentDescription = m.label
+                            contentDescription = m.label,
                         )
                     }
                 }
@@ -158,7 +180,7 @@ fun MenuView(
                 Row(modifier = Modifier.widthIn(100.dp, 200.dp)) {
 
                     Text(
-                        text = stringResourceByName(c.label ),
+                        text = stringResourceByName(c.label),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(15.dp, 10.dp)
