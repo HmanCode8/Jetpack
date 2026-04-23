@@ -17,7 +17,7 @@ data class MChildren<T>(
 data class MenuItem(
     val label: String,
     val id: Int,
-    val icon: Int,
+    val icon: String,
     val children: List<MChildren<*>> = emptyList() // 👈 正确写法
 )
 
@@ -44,12 +44,7 @@ data class LayerItem(
     val layerId: Int?,
     val dataBase: String?,    // 数据库库名 sde / othldbsde
     val tableName: String?,   // 数据库表名（你表格里的全部表名）
+    val isChecked: Boolean = false,
     val children: List<LayerItem>?  // 无限层级子图层，递归嵌套
 )
 
-// 图层UI包装类（勾选、展开状态，完全保留你原有代码）
-data class LayerWrap(
-    val item: LayerItem,       // 后端原始图层数据
-    var isChecked: Boolean = false, // 右侧开关勾选状态（和UI开关一一对应）
-    var isExpanded: Boolean = false // 文件夹展开/折叠状态（和UI箭头展开对应）
-)

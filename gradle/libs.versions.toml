@@ -10,6 +10,13 @@ kotlin = "2.0.21"
 composeBom = "2024.09.00"
 compose = "1.11.0-beta02"
 datastoreCore = "1.2.1"
+arcgisMapsKotlin = "200.8.1"
+toasty = "1.5.2"
+okhttp = "4.12.0"
+gson = "2.10.1"
+coil = "2.7.0"
+lottie-compose = "6.7.1"
+
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -28,6 +35,15 @@ androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-te
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "compose" }
 androidx-datastore-core = { group = "androidx.datastore", name = "datastore-core", version.ref = "datastoreCore" }
+arcgis-maps-kotlin = { group = "com.esri", name = "arcgis-maps-kotlin", version.ref = "arcgisMapsKotlin" }
+arcgis-maps-kotlin-toolkit-bom = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-bom", version.ref = "arcgisMapsKotlin" }
+arcgis-maps-kotlin-toolkit-geoview-compose = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-geoview-compose" }
+arcgis-maps-kotlin-toolkit-authentication = { group = "com.esri", name = "arcgis-maps-kotlin-toolkit-authentication" }
+toasty = {group="com.github.GrenderG",name="Toasty",version.ref="toasty"}
+okhttp = {group="com.squareup.okhttp3",name="okhttp",version.ref="okhttp"}
+gson = {group="com.google.code.gson",name="gson",version.ref="gson"}
+coil = {group="io.coil-kt",name="coil-compose",version.ref="coil"}
+lottie= {group="com.airbnb.android",name="lottie-compose",version.ref="lottie-compose"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

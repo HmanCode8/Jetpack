@@ -18,7 +18,7 @@ android {
     }
     defaultConfig {
         applicationId = "com.example.jetcompose"
-        minSdk = 24
+        minSdk = 28
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -62,16 +62,19 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-    implementation("com.esri.arcgisruntime:arcgis-android:100.15.8")
-    implementation("com.github.GrenderG:Toasty:1.5.2")
+    implementation(libs.arcgis.maps.kotlin)
+    // Toolkit dependencies
+    implementation(platform(libs.arcgis.maps.kotlin.toolkit.bom))
+    implementation(libs.arcgis.maps.kotlin.toolkit.geoview.compose)
+    implementation(libs.arcgis.maps.kotlin.toolkit.authentication)
+
+    implementation(libs.toasty)
     //用 Coil 加载网络图片，Jetpack Compose 官方推荐
-    implementation("io.coil-kt:coil-compose:2.7.0")
+    implementation(libs.coil)
     // OkHttp
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-
+    implementation(libs.okhttp)
     // Gson 解析 JSON
-    implementation("com.google.code.gson:gson:2.10.1")
-
+    implementation(libs.gson)
     //Lottie动画库
-    implementation("com.airbnb.android:lottie-compose:6.7.1")
+    implementation(libs.lottie)
 }

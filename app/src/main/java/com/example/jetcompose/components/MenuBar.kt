@@ -1,6 +1,7 @@
 package com.example.jetcompose.components
 
 import android.content.Context
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,10 +22,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -38,6 +42,7 @@ import androidx.compose.ui.res.stringResource
 import com.example.jetcompose.untils.LocaleUtils
 import com.example.jetcompose.untils.MChildren
 import com.example.jetcompose.untils.MenuItem
+import com.example.jetcompose.untils.getDrawable
 import com.example.jetcompose.untils.stringResourceByName
 
 
@@ -52,7 +57,7 @@ fun MenuView(
                 MenuItem(
                     "查询",
                     1,
-                    R.drawable.ic_search,
+                    "menu_query",
                     listOf(
                         MChildren("panel_advanced", "1-1"),
                         MChildren("panel_valve", "1-2"),
@@ -60,7 +65,7 @@ fun MenuView(
                     )
                 ),
                 MenuItem(
-                    "gis", 2, R.drawable.ic_menu, listOf(
+                    "gis", 2, "menu_gis", listOf(
                         MChildren("panel_change_symbology", "2-1"),
                         MChildren("panel_highlight", "2-2")
                     )
@@ -68,7 +73,7 @@ fun MenuView(
                 MenuItem(
                     "Task",
                     3,
-                    R.drawable.ic_briefcase,
+                    "menu_task",
                     listOf(
                         MChildren("panel_vicp", "3-1"),
                         MChildren("panel_pipeline_tracing", "3-1"),
@@ -79,9 +84,12 @@ fun MenuView(
         )
     }
 
-    val childMenus = remember { mutableStateOf<List<MChildren<*>>>(emptyList()) }
+    val childMenus = remember {
+        mutableStateOf<List<MChildren<*>>>(emptyList())
+    }
 
-    val isActive = remember { mutableStateOf(0) }
+    val isActive = remember { mutableIntStateOf(0) }
+    val isActiveChild = remember { mutableStateOf("") }
 
     Row(
         modifier = Modifier
@@ -91,44 +99,64 @@ fun MenuView(
             .background(Color.White, shape = RoundedCornerShape(25.dp))
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
-            // 1. 圆形头像
-            Column(
+
+            // 1. 圆形头像 + 半透明背景（叠层布局）
+            Box(
                 modifier = Modifier
-                    .align(Alignment.CenterStart) // 靠左
+                    .align(Alignment.CenterStart)
+                    .border(2.dp,Color(0xFF94c3f4), shape = CircleShape)
                     .size(50.dp)
-                    .clickable() {
+                    .clickable {
                         onMenuChange("个人中心 ", "my")
                     }
-                    .background(
-                        brush = Brush.radialGradient(
-                            0.5f to Color(0xFFE8F2FA),
-                            0.2f to Color(0xFFe6f4ff)
-                        ), CircleShape
-                    ),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "JACK He",
-                    fontSize = 8.sp,
-                    color = Color(0xFF091224),
-                    fontWeight = FontWeight.Bold
+                // 头像（中间层）
+                Image(
+                    painter = painterResource(getDrawable("avatar")),
+                    contentDescription = "avatar",
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .clip(CircleShape)
+                        .border(1.dp,Color.Gray)
+                        .fillMaxSize()
                 )
-                Text(
-                    text = "WSD/dd,dd",
-                    color = Color(0xFF1E4A94),
-                    fontSize = 5.sp
-                )
+
+                // 文字（最上层）
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .background(
+                            brush = Brush.radialGradient(
+                                1f to Color(0xFF2a5aa2).copy(alpha = 0.8f),
+                                0.2f to Color(0xFF2D4456).copy(alpha = 0.8f)
+                            ),
+                            shape = CircleShape
+                        ).fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "JACK He",
+                        fontSize = 10.sp,
+                        color = Color(0xFFFFFFFF),
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "PC/AM,WSD",
+                        color = Color(0xFFFFFFFF),
+                        fontSize = 6.sp
+                    )
+                }
             }
-            // 2. 菜单条
+
+            // 2. 菜单条（完全不动）
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .fillMaxHeight()
-                    .align(Alignment.CenterStart) // 靠左
+                    .align(Alignment.CenterStart)
                     .padding(start = 50.dp)
-                    .background(Color.White)
             ) {
                 menuList.value.forEachIndexed { index, m ->
                     Row(
@@ -139,55 +167,59 @@ fun MenuView(
                             .width(50.dp)
                             .padding(2.dp)
                             .background(
-                                // 统一全部用 Brush 类型，if 整体返回一个 Brush，不再内部写 brush=
-                                brush = if (isActive.value == m.id) {
+                                brush = if (isActive.intValue == m.id) {
                                     Brush.verticalGradient(
-                                        // 这里粘贴回你原本的所有渐变颜色参数
                                         0.2f to Color(0xFFebf5fe),
                                         0.4f to Color(0xFFebf5fe),
                                         0.4f to Color(0xFFf3f8fc)
                                     )
                                 } else {
-                                    // 白色纯色 转成 SolidColor Brush，和上面分支类型完全统一
                                     SolidColor(Color.White)
                                 },
                                 shape = RoundedCornerShape(size = 2.dp)
                             )
-                            .clickable() {
-                                isActive.value = if (isActive.value == m.id) 0 else m.id
+                            .clickable {
+                                isActive.intValue = if (isActive.intValue == m.id) 0 else m.id
                                 childMenus.value = m.children
                             }
                     ) {
                         Icon(
-                            tint = Color(if (isActive.value == m.id) 0xFF0092e0 else 0xFF7289a6),
-                            painter = painterResource(m.icon),
+                            tint = Color(if (isActive.intValue == m.id) 0xFF0092e0 else 0xFF7289a6),
+                            painter = painterResource(getDrawable(m.icon)),
                             contentDescription = m.label,
+                            modifier = Modifier.size(30.dp)
                         )
                     }
                 }
             }
         }
-
     }
-    Row(modifier = Modifier.padding(top = 80.dp, start = 30.dp)) {
-        if (isActive.value == 0) null else Column(
-            modifier = Modifier.background(
-                Color.White,
-                shape = RoundedCornerShape(5.dp)
-            )
+    Row(
+        modifier = Modifier
+            .padding(top = 80.dp, start = 30.dp)
+            .background(Color.White, shape = RoundedCornerShape(3.dp))
+    ) {
+        if (isActive.intValue != 0) Column(
+            modifier = Modifier
         ) {
-            childMenus.value.forEachIndexed { index, c ->
-                Row(modifier = Modifier.widthIn(100.dp, 200.dp)) {
+            childMenus.value.forEach { c ->
+                Row(
+                    modifier = Modifier
+                        .widthIn(100.dp, 200.dp)
+                        .padding(10.dp)
+                        .clickable() {
+                            isActiveChild.value = c.label
+                            onMenuChange(c, "menu")
+//                                isActive.value = 0
+                        }
+                ) {
 
                     Text(
                         text = stringResourceByName(c.label),
+                        color = Color(if (isActiveChild.value == c.label) 0xFF0092e0 else 0xFF7289a6),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(15.dp, 10.dp)
-                            .clickable() {
-                                onMenuChange(c, "menu")
-                                isActive.value = 0
-                            })
+                    )
                 }
             }
         }

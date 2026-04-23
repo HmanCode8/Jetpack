@@ -66,7 +66,7 @@ fun Panel(
     val isExpand = remember { mutableStateOf(true) }
     Box(
         modifier = Modifier
-            .widthIn(0.dp, 400.dp)
+            .widthIn(0.dp, 350.dp)
             .height(500.dp)
             .padding(start = 5.dp)
     ) {

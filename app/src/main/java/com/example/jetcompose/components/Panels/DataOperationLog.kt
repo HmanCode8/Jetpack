@@ -63,7 +63,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
-import com.esri.arcgisruntime.internal.jni.fa
 import com.example.jetcompose.R
 import com.example.jetcompose.components.common.YutuDatePicker
 import com.example.jetcompose.components.common.YutuDropdown

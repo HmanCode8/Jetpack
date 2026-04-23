@@ -56,7 +56,7 @@ val contentNow = LocalContext.current
 
                 Icon(
                     painter =painterResource( getDrawable("tool_${t}")),
-                    contentDescription = "layer",
+                    contentDescription = "$t",
                     tint = Color(if (activeTool.value == t)0xFF3f8fe3 else 0xFF7289a6),
                     modifier= Modifier.size(30.dp).padding(3.dp,5.dp).scale(if (activeTool.value == t)1.2f else 1f).clickable{
                         callback(t)
@@ -80,17 +80,17 @@ val contentNow = LocalContext.current
                         .size(30.dp)
                         .background(Color.White, shape = RoundedCornerShape(2.dp)).clickable{
                            when(t){
-                               "fangda"-> MapToolsUntil.zoomIn()
-                               "suoxiao"-> MapToolsUntil.zoomOut()
-                               "dingwei"-> MapToolsUntil.locateToCurrentLocation()
+//                               "fangda"-> MapToolsUntil.zoomIn()
+//                               "suoxiao"-> MapToolsUntil.zoomOut()
+//                               "dingwei"-> MapToolsUntil.locateToCurrentLocation()
                            }
                         }
                 ) {
                     Icon(
                         painter =painterResource( getDrawable("tool_${t}")),
                         tint = Color(0xFF7289a6),
-                        contentDescription = "11",
-                        modifier = Modifier.padding(3.dp, 5.dp)
+                        contentDescription = "$t",
+                        modifier = Modifier.size(30.dp).padding(3.dp, 5.dp)
                     )
                 }
             }
