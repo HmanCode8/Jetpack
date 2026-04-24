@@ -3,6 +3,7 @@ package com.example.jetcompose.untils
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.SpatialReference
 import com.arcgismaps.mapping.*
+import com.arcgismaps.mapping.layers.ArcGISTiledLayer
 import com.arcgismaps.mapping.layers.WebTiledLayer
 import com.arcgismaps.mapping.view.Camera
 import com.arcgismaps.portal.Portal
@@ -46,27 +47,16 @@ object TianDiTuLayer {
         return ArcGISMap(Basemap(listOf(imgLayer, ciaLayer, hkLabelLayer)))
     }
 
-    // ====================== 【全新修复】香港地政总署 官方影像底图 ======================
-    // 官网严格URL：https://mapapi.geodata.gov.hk/gs/api/[version]/xyz/imagery/[sr]/[z]/[x]/[y].png
-    // 对应映射： [z]={level} , [x]={col} , [y]={row}  100%严格对应
     fun createHongKongImageryMap(): ArcGISMap {
         // 香港官方粤港澳大湾区哨兵2号高清影像（严格官网URL）
         val hkImageryLayer = WebTiledLayer.create(
             "https://mapapi.geodata.gov.hk/gs/api/$HK_API_VERSION/xyz/imagery/$HK_SR/{level}/{col}/{row}.png"
         ).apply {
-            // 官网强制版权声明 一字不差
             attribution = "地圖由地政總署提供 | Contains modified Copernicus Sentinel data [2022]"
         }
-        val vecLayer = WebTiledLayer.create(
-            "https://{subDomain}.tianditu.gov.cn/DataServer?T=vec_w&x={col}&y={row}&l={level}&tk=$TDT_KEY", subDomains
-        ).apply {
-            attribution = "© 国家自然资源部 天地图"
-        }
-        // 香港本地地名标注图层
         val hkLabelLayer = createHkLabelLayer("en")
 
-        // 图层顺序：影像底图在下 + 标注文字在上
-        return ArcGISMap(Basemap(listOf(vecLayer, hkLabelLayer)))
+        return ArcGISMap(Basemap(listOf(hkImageryLayer, hkLabelLayer)))
     }
 
     // ====================== 香港地名标注图层（en英文/tc繁体/sc简体） ======================
@@ -88,7 +78,11 @@ object TianDiTuLayer {
         return ArcGISScene(portalItem)
     }
 
-    fun create3DScene(): ArcGISScene {
-        return ArcGISScene(BasemapStyle.ArcGISDarkGray)
+    fun createHkArcgisMap(): ArcGISMap {
+        val url = "http://10.11.228.247:9101/arcgis/rest/services/HK_MAP/BaseMap/MapServer"
+        val layer =  ArcGISTiledLayer(url)
+        println("layer=="+layer)
+        return ArcGISMap(Basemap(layer))
     }
+
 }

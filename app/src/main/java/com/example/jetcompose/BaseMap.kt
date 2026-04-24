@@ -94,13 +94,11 @@ fun BaseMapView() {
     val mySetting = remember { mutableStateOf(false) }
     val mapType = remember { mutableStateOf("vec") }
     val scope = rememberCoroutineScope()
-    var arcGISMap = remember {
+    val arcGISMap = remember {
         TianDiTuLayer.createHongKongImageryMap().apply {
-            // 重点修复：初始缩放！！！
-            // 官方WGS84低层级(0-6)无瓦片！必须初始放大到香港本地可见层级
             initialViewpoint = Viewpoint(
                 Point(114.1694, 22.3193, SpatialReference.wgs84()),
-                10000.0   // 缩放scale缩小，地图放大，进入服务有数据的高层级区域
+                80000.0   // 缩放scale缩小，地图放大，进入服务有数据的高层级区域
             )
         }
 
@@ -117,14 +115,6 @@ fun BaseMapView() {
         }
     }
     Box(modifier = Modifier.fillMaxSize()) {
-        LaunchedEffect(mapType) {
-            arcGISMap = TianDiTuLayer.createTdtImgMap().apply {
-                initialViewpoint = Viewpoint(
-                    Point(114.1694, 22.3193, SpatialReference.wgs84()),
-                    80000.0
-                )
-            }
-        }
         if (mapType.value != "scene") {
             MapView(
                 arcGISMap = arcGISMap,
