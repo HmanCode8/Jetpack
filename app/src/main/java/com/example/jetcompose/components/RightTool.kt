@@ -79,6 +79,7 @@ val contentNow = LocalContext.current
                     modifier = Modifier
                         .size(30.dp)
                         .background(Color.White, shape = RoundedCornerShape(2.dp)).clickable{
+                            callback(t)
                            when(t){
 //                               "fangda"-> MapToolsUntil.zoomIn()
 //                               "suoxiao"-> MapToolsUntil.zoomOut()

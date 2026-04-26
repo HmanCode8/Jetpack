@@ -145,6 +145,12 @@ fun UserSetting(
                                 )
                                 .clickable() {
                                     LocaleUtils.setLanguage(nowContent, v.key)
+                                    when(v.key){
+                                        "zh-CN"->  AppGlobalState.currentLang.value = "sc"
+                                        "zh-TW"->  AppGlobalState.currentLang.value = "tc"
+                                        else -> AppGlobalState.currentLang.value = "en"
+                                    }
+
                                     languageActive.value = v.key
                                 }
                         ) {
@@ -169,12 +175,12 @@ fun UserSetting(
                                 .height(25.dp)
                                 .background(
                                     color = Color(
-                                        if (fontSizeActive.value == index + 1) 0xFF0091ea else 0xFFF4F6F9
+                                        if (fontSizeActive.intValue == index + 1) 0xFF0091ea else 0xFFF4F6F9
                                     ),
                                     shape = RoundedCornerShape(2.dp)
                                 )
                                 .clickable {
-                                    fontSizeActive.value = index + 1
+                                    fontSizeActive.intValue = index + 1
 
 //                                    AppGlobalState.currentFontScale.value = when (index) {
 //                                        0 -> 16.sp

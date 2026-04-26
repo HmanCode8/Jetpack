@@ -1,6 +1,5 @@
 package com.example.jetcompose
 
-import android.graphics.Camera
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -43,10 +42,11 @@ import com.arcgismaps.ArcGISEnvironment
 import com.arcgismaps.LicenseKey
 import com.arcgismaps.geometry.Point
 import com.arcgismaps.geometry.SpatialReference
+import com.arcgismaps.mapping.ArcGISMap
+import com.arcgismaps.mapping.Basemap
 import com.arcgismaps.mapping.Viewpoint
-import com.arcgismaps.tasks.offlinemaptask.OfflineMapTask
 import com.arcgismaps.toolkit.geoviewcompose.MapView
-import com.arcgismaps.toolkit.geoviewcompose.SceneView
+import com.arcgismaps.toolkit.geoviewcompose.MapViewProxy
 import com.example.jetcompose.components.BottomBar
 import com.example.jetcompose.components.LayerManagement
 import com.example.jetcompose.components.MenuView
@@ -56,8 +56,11 @@ import com.example.jetcompose.components.UserSetting
 import com.example.jetcompose.untils.AppGlobalState
 import com.example.jetcompose.untils.LocaleUtils
 import com.example.jetcompose.untils.MChildren
+import com.example.jetcompose.untils.MapToolsUntil
 import com.example.jetcompose.untils.TianDiTuLayer
 import com.example.jetcompose.untils.stringResourceByName
+import es.dmoral.toasty.Toasty
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 class BaseMap : ComponentActivity() {
@@ -66,7 +69,6 @@ class BaseMap : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         initMapConfig()
-        Log.d("map11", "ddd")
         setContent {
             BaseMapView()
         }
@@ -81,64 +83,91 @@ fun initMapConfig() {
     val licenseKey = LicenseKey.create("runtimelite,1000,rud9878094479,none,9TJC7XLS1MM0J9HSX236")
     licenseKey?.let {
         val res = ArcGISEnvironment.setLicense(licenseKey)
-        Log.d("License", "授权结果: ${res}")
+        Log.d("License", "授权结果: $res")
     }
 }
 
 @Composable
 fun BaseMapView() {
-    val currentContent = LocalContext.current
+    val nowCurrent = LocalContext.current
     val activeMenu = remember { mutableStateOf<MChildren<*>?>(null) }
     val contactIsShow = remember { mutableStateOf(false) }
     val layerListIsShow = remember { mutableStateOf(false) }
     val mySetting = remember { mutableStateOf(false) }
     val mapType = remember { mutableStateOf("vec") }
-    val scope = rememberCoroutineScope()
+
+    // ========================
+    // 🔥 正确创建地图（必须初始化 Basemap）
+    // ========================
     val arcGISMap = remember {
-        TianDiTuLayer.createHongKongImageryMap().apply {
+        ArcGISMap(Basemap()).apply {
             initialViewpoint = Viewpoint(
                 Point(114.1694, 22.3193, SpatialReference.wgs84()),
-                80000.0   // 缩放scale缩小，地图放大，进入服务有数据的高层级区域
-            )
-        }
-
-    }
-
-    // 🔥 加上 remember，3D 场景只创建一次
-    val scene = remember {
-        TianDiTuLayer.createScene().apply {
-            initialViewpoint = Viewpoint(
-                Point(114.1694, 22.3193, SpatialReference.wgs84()),
-                80000.0,
-//                camera =
+                80000.0
             )
         }
     }
+
+    val mapViewProxy = remember { MapViewProxy() }
+    // 🔥 正确切换底图
+    // ========================
+    LaunchedEffect(mapType.value) {
+        val basemap = arcGISMap.basemap
+        basemap.value?.baseLayers?.clear()
+//        basemap.value?.referenceLayers?.clear()
+        MapToolsUntil.bind(mapViewProxy)
+        val baseLayer = when (mapType.value) {
+            "vec" -> TianDiTuLayer.getHongKongVecLayer()
+            "img" -> TianDiTuLayer.getHongKongImageryLayer()
+            else -> TianDiTuLayer.getHongKongVecLayer()
+        }
+
+        basemap.value?.baseLayers?.add(baseLayer)
+    }
+
+    // ========================
+    // 🔥 正确切换语言注记
+    // ========================
+    LaunchedEffect(AppGlobalState.currentLang.value) {
+        val lang = AppGlobalState.currentLang.value
+        val basemap = arcGISMap.basemap
+        basemap.value?.referenceLayers?.clear()
+        basemap.value?.referenceLayers?.add(TianDiTuLayer.getHongKongLabelLayer(lang))
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
-        if (mapType.value != "scene") {
-            MapView(
-                arcGISMap = arcGISMap,
-                modifier = Modifier.fillMaxSize(),
-                isAttributionBarVisible = false,
-                onMapScaleChanged = { scale ->
-                    AppGlobalState.currentScale.value = scale.toInt()
-                },
-                onSingleTapConfirmed = { sing ->
-//                    val mapPoint = this.screenToLocation(sing.screenCoordinate)
-//                    mapPoint?.let {
-//                        Log.d("经纬度", "lon=${it.x}, lat=${it.y}")
-//                    }
-                }
-            )
-        } else {
-            SceneView(
-                arcGISScene = scene,
-                modifier = Modifier.fillMaxSize(),
-                isAttributionBarVisible = false
-            )
-        }
+        MapView(
+            arcGISMap = arcGISMap,
+            modifier = Modifier.fillMaxSize(),
+            mapViewProxy = mapViewProxy,
+            isAttributionBarVisible = false,
+            onTwoPointerTap ={p->
+                Log.d("onTwoPointerTap","$p")
+            },
 
-        // -------------------- 下面 UI 不变 --------------------
+            onSingleTapConfirmed = { singleTapConfirmedEvent ->
+                val x = singleTapConfirmedEvent.screenCoordinate.x
+                val y = singleTapConfirmedEvent.screenCoordinate.y
+                val p = Point(x, y, SpatialReference.wgs84())
+                Log.i("onSingleTapConfirmed", "Single tap at ${p.x}-${p.y}")
+            },
+            onMapScaleChanged = { scale ->
+//                currentMapScale.value = scale // 更新状态
+                MapToolsUntil.currentScale = scale
+                AppGlobalState.currentScale.value = scale.toInt()
+            },
+            onSpatialReferenceChanged = { s ->
+                Log.d("毁掉1", "$s")
+            },
+            onUnitsPerDipChanged = { p ->
+                Log.d("毁掉2", "${p.dp}")
+            },
+            onViewpointChangedForCenterAndScale = { v ->
+                Log.d("毁掉3", "${v.targetScale}")
+            },
+
+            )
+        // -------------------- UI 不变 --------------------
         MenuView { menuItem, type ->
             if (type == "menu") {
                 activeMenu.value = menuItem as? MChildren<*>
@@ -169,8 +198,10 @@ fun BaseMapView() {
                 .align(Alignment.CenterEnd)
                 .padding(end = 10.dp),
             { k ->
-                if (k == "tuceng") {
-                    layerListIsShow.value = !layerListIsShow.value
+                when (k) {
+                    "tuceng" -> layerListIsShow.value = !layerListIsShow.value
+                    "fangda" -> MapToolsUntil.zoomIn()
+                    "suoxiao" -> MapToolsUntil.zoomOut()
                 }
             }
         )
@@ -181,9 +212,7 @@ fun BaseMapView() {
                     .align(Alignment.CenterEnd)
                     .padding(end = 50.dp)
                     .freeDrag(),
-                { t ->
-                    mapType.value = t
-                },
+                { t -> mapType.value = t },
                 { layerListIsShow.value = false }
             )
         }

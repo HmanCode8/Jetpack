@@ -67,7 +67,9 @@ dependencies {
     implementation(platform(libs.arcgis.maps.kotlin.toolkit.bom))
     implementation(libs.arcgis.maps.kotlin.toolkit.geoview.compose)
     implementation(libs.arcgis.maps.kotlin.toolkit.authentication)
-
+    implementation(platform("com.esri:arcgis-maps-kotlin-toolkit-bom:300.0.0"))
+    implementation("com.esri:arcgis-maps-kotlin-toolkit-geoview-compose")
+    implementation("com.esri:arcgis-maps-kotlin-toolkit-authentication")
     implementation(libs.toasty)
     //用 Coil 加载网络图片，Jetpack Compose 官方推荐
     implementation(libs.coil)
