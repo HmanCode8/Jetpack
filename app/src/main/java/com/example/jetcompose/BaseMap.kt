@@ -141,8 +141,8 @@ fun BaseMapView() {
             modifier = Modifier.fillMaxSize(),
             mapViewProxy = mapViewProxy,
             isAttributionBarVisible = false,
-            onTwoPointerTap ={p->
-                Log.d("onTwoPointerTap","$p")
+            onTwoPointerTap = { p ->
+                Log.d("onTwoPointerTap", "$p")
             },
 
             onSingleTapConfirmed = { singleTapConfirmedEvent ->
@@ -176,6 +176,7 @@ fun BaseMapView() {
             }
         }
 
+        // 先缓存状态到局部变量，避免并发修改
         Column(
             modifier = Modifier
                 .align(Alignment.CenterStart)
@@ -218,7 +219,7 @@ fun BaseMapView() {
         }
 
         if (contactIsShow.value) {
-            Contact { contactIsShow.value = false }
+            Contact(modifier = Modifier.align(Alignment.Center)) { contactIsShow.value = false }
         }
 
         if (mySetting.value) {

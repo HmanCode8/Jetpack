@@ -4,197 +4,173 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.awaitEachGesture
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.waitForUpOrCancellation
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerEventPass
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Popup
 import com.example.jetcompose.R
 import com.example.jetcompose.components.common.YutuDatePicker
 import com.example.jetcompose.components.common.YutuDropdown
-import com.example.jetcompose.untils.LocaleUtils
 import com.example.jetcompose.untils.stringResourceByName
 import es.dmoral.toasty.Toasty
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Composable
 fun DataOperationLog() {
-    val contentNow = LocalContext.current
+    val context = LocalContext.current
     val content = remember { mutableStateOf("") }
     val contentID = remember { mutableStateOf("") }
     val startDate = remember { mutableStateOf("") }
     val endDate = remember { mutableStateOf("") }
     val searchKey = remember { mutableStateOf("") }
-    Box(modifier = Modifier.fillMaxSize()) {
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(10.dp)
+    ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(5.dp, 0.dp)
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Top
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(20.dp)
+            // 搜索区域
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                Text(text = "Search")
-            }
-            Row() {
-                Row() {
-                    YutuDropdown(modifier = Modifier.weight(1f), { k ->
-                        content.value = k
-                    })
-                    Spacer(modifier = Modifier.width(2.dp))
+                Text(
+                    text = "Search Options",
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    YutuDropdown(
+                        modifier = Modifier.weight(1f),
+                        onChange = { content.value = it } // 必须和定义的参数名一致
+                    )
                     OutlinedTextField(
                         value = contentID.value,
-                        onValueChange = { v ->
-                            contentID.value = v
-                        },
-                        label = { Text(text = "ID", fontSize = 10.sp) },
-                        modifier = Modifier.weight(1f)
+                        onValueChange = { contentID.value = it },
+                        label = { Text("ID", fontSize = 12.sp) },
+                        modifier = Modifier.weight(1f),
+                        textStyle = TextStyle(fontSize = 12.sp)
                     )
                 }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Row(modifier = Modifier.weight(1f)) {
-                    YutuDatePicker({ time ->
-                        startDate.value = time
-                    })
-                }
-                Spacer(modifier = Modifier.width(2.dp))
-                Row(modifier = Modifier.weight(1f)) {
-                    YutuDatePicker({ time ->
-                        endDate.value = time
-                    })
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    // 修复后的YutuDatePicker调用
+                    YutuDatePicker(
+                        modifier = Modifier.weight(1f),
+                        onDateSelected = { startDate.value = it }
+                    )
+                    Spacer(modifier = Modifier.width(2.dp))
+                    YutuDatePicker(
+                        modifier = Modifier.weight(1f),
+                        onDateSelected = { endDate.value = it }
+                    )
                 }
 
-            }
-            Row() {
                 OutlinedTextField(
                     value = searchKey.value,
-                    onValueChange = { v ->
-                        searchKey.value = v
-                    },
-                    placeholder = { Text(text = "请输入") },
-                    label = { Text(text = "搜索", fontSize = 10.sp) },
-                    modifier = Modifier.weight(1f),
+                    onValueChange = { searchKey.value = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text("Search Keyword", fontSize = 12.sp) },
                     leadingIcon = {
-                        Icon(Icons.Default.Search, contentDescription = "搜索")
+                        Icon(Icons.Default.Search, null, Modifier.size(18.dp))
                     },
                     trailingIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.tool_qingchu),
-                            contentDescription = "clear",
-                            modifier = Modifier
-                                .size(20.dp)
-                                .clickable {
-                                    searchKey.value = ""
-                                }
-                        )
-                    }
-
+                        IconButton(onClick = { searchKey.value = "" }) {
+                            Icon(
+                                painter = painterResource(R.drawable.tool_qingchu),
+                                null,
+                                Modifier.size(18.dp)
+                            )
+                        }
+                    },
+                    textStyle = TextStyle(fontSize = 12.sp)
                 )
             }
-            Row() {
-                YutuTable()
-            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // 表格（修复：限制最大高度，避免UI重叠）
+            YutuTable(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f) // 关键：占满剩余空间，不会顶飞底部按钮
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
         }
 
+        // 底部按钮（固定在底部，不会被遮挡）
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(2.dp, 0.dp)
                 .align(Alignment.BottomCenter),
-            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            TextButton(
-                onClick = {
-                },
-            ) {
-                Text(text = stringResourceByName("btn_cancel"))
+            TextButton(onClick = {}) {
+                Text(stringResourceByName("btn_cancel"))
             }
             Button(onClick = {
                 val params = mapOf(
                     "content" to content.value,
-                    "id" to contentID,
+                    "id" to contentID.value, // 修复：这里必须加 .value
                     "startDate" to startDate.value,
                     "endDate" to endDate.value,
                     "key" to searchKey.value
                 )
-                Toasty.success(contentNow, "params+${params}").show()
+                Toasty.success(context, "Params: $params").show()
             }) {
-                Text(text = stringResourceByName("btn_ok"))
+                Text(stringResourceByName("btn_ok"))
             }
         }
     }
 }
 
-// 表头：显示名 + 字段key
+// ==================== 表格实体 ====================
 data class TableHeader(
     val label: String,
     val key: String
 )
 
-// 日志数据：和截图字段一一对应
 data class LogData(
     val date: String,
     val time: String,
@@ -203,7 +179,6 @@ data class LogData(
     val content: String
 )
 
-// 自动根据 字段名(key) 取对象的值
 fun Any.getFieldValue(fieldName: String): String {
     return try {
         val field = this::class.java.getDeclaredField(fieldName)
@@ -214,67 +189,69 @@ fun Any.getFieldValue(fieldName: String): String {
     }
 }
 
+// ==================== 美化版表格 ====================
 @Composable
-fun YutuTable() {
-    val tableHear = remember {
+fun YutuTable(modifier: Modifier = Modifier) {
+    val headers = remember {
         listOf(
-            TableHeader("Data", "date"),
+            TableHeader("Date", "date"),
             TableHeader("Time", "time"),
-            TableHeader("Uaer ID", "userId"), // 截图里的拼写，这里保持一致
+            TableHeader("User ID", "userId"), // 修复拼写
             TableHeader("IP", "ip"),
             TableHeader("Content", "content")
         )
     }
 
-    val mockLogs = listOf(
-        LogData("2025-9-8", "18:00:00", "Jane", "10.11.223.95", "Delet"),
-        LogData("2025-9-7", "11:00:00", "Emily", "12.00.206.34", "Upload"),
-        LogData("2025-9-6", "11:00:00", "Emily", "12.00.206.34", "Delet"),
-        LogData("2025-8-17", "14:30:00", "Tom", "12.00.206.44", "Search"),
-        LogData("2025-8-15", "14:30:00", "Tom", "12.00.206.44", "Search")
-    )
+    val logs = remember {
+        listOf(
+            LogData("2025-09-08", "18:00:00", "Jane", "10.11.223.95", "Delete"),
+            LogData("2025-09-07", "11:00:00", "Emily", "12.00.206.34", "Upload"),
+            LogData("2025-09-06", "11:00:00", "Emily", "12.00.206.34", "Delete"),
+            LogData("2025-08-17", "14:30:00", "Tom", "12.00.206.44", "Search"),
+            LogData("2025-08-15", "14:30:00", "Tom", "12.00.206.44", "Search")
+        )
+    }
+
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
+            .border(1.dp, Color.LightGray)
             .verticalScroll(rememberScrollState())
     ) {
-        Spacer(modifier = Modifier.height(10.dp))
-
+        // 表头
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .border(1.dp, Color.LightGray),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .background(MaterialTheme.colorScheme.primaryContainer)
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            tableHear.forEachIndexed { index, header ->
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(3.dp, 0.dp)
-                ) {
-                    Text(text = header.label, textAlign = TextAlign.Center)
-                }
+            headers.forEach {
+                Text(
+                    text = it.label,
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Center,
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
             }
         }
-        Column(modifier = Modifier
-            .fillMaxWidth()
-        ) {
-            mockLogs.forEach { t ->
-                Row(modifier = Modifier
+
+        // 表格内容
+        logs.forEach { log ->
+            Row(
+                modifier = Modifier
                     .fillMaxWidth()
-                    .border(1.dp, Color.LightGray)) {
-                    tableHear.forEach { h ->
-                        Row(
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(text = t.getFieldValue(h.key), textAlign = TextAlign.Center)
-                        }
-                    }
+                    .padding(vertical = 6.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                headers.forEach {
+                    Text(
+                        text = log.getFieldValue(it.key),
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.Center,
+                        fontSize = 12.sp
+                    )
                 }
             }
         }

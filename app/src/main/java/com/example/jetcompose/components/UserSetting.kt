@@ -145,9 +145,9 @@ fun UserSetting(
                                 )
                                 .clickable() {
                                     LocaleUtils.setLanguage(nowContent, v.key)
-                                    when(v.key){
-                                        "zh-CN"->  AppGlobalState.currentLang.value = "sc"
-                                        "zh-TW"->  AppGlobalState.currentLang.value = "tc"
+                                    when (v.key) {
+                                        "zh-CN" -> AppGlobalState.currentLang.value = "sc"
+                                        "zh-TW" -> AppGlobalState.currentLang.value = "tc"
                                         else -> AppGlobalState.currentLang.value = "en"
                                     }
 
@@ -318,32 +318,37 @@ fun Modal(
     Dialog(onDismissRequest = { onClose() }) {
         Column(
             modifier = Modifier
-                .height(220.dp)
+//                .height(220.dp)
                 .width(400.dp)
-                .background(
-                    Color.White, shape = RoundedCornerShape(10.dp)
+                .background(brush = Brush.verticalGradient(
+                    0.1f to Color(0xFFBAD7EF),
+                    0.4f to Color(0xFFE9EDF1)
+                ), shape = RoundedCornerShape(10.dp)
                 )
+                .padding(10.dp, 0.dp)
         ) {
             Column(modifier = Modifier.padding(5.dp)) {
                 Text(
                     text = "Switch To Offline Mode",
                     fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(0.dp, 5.dp)
                 )
                 Text(
                     text = "Available offline map regions",
                     fontSize = 10.sp,
-                    modifier = Modifier.padding(top = 5.dp)
+                    modifier = Modifier.padding(0.dp, 5.dp)
                 )
 
-                Column(modifier = Modifier.padding(5.dp)) {
+                Column() {
                     regionData.value.forEachIndexed { index, group ->
-                        Spacer(modifier = Modifier.padding(top = 5.dp))
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .padding(0.dp, 5.dp)
                                 .background(Color(0xFFF0F3F3), shape = RoundedCornerShape(3.dp))
-                                .padding(5.dp, 3.dp)
+                                .padding(5.dp)
+
 
                         ) {
                             Icon(
@@ -384,38 +389,49 @@ fun Modal(
 
             }
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+                modifier = Modifier.fillMaxWidth().padding(10.dp,0.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                TextButton(onClick = {
+                Text(text = stringResourceByName("btn_cancel"), modifier = Modifier.clickable() {
                     onClose()
-                }) {
-                    Text(text = stringResourceByName("btn_cancel"))
-                }
-                TextButton(onClick = {
-                    success(false)
-                }) {
-                    Text(text = stringResourceByName("btn_ok"))
-                }
+                })
+
+                MyButton(
+                    text = stringResourceByName("btn_ok"), modifier = Modifier
+                        .padding(5.dp)
+                        .background(Color(0xFF0091EA), shape = RoundedCornerShape(3.dp))
+                        .padding(10.dp,5.dp)
+                        .clickable() {
+                            success(false)
+                        })
             }
         }
     }
 }
 
+@Composable
+fun MyButton(text: String, modifier: Modifier = Modifier) {
+    Text(
+        text = stringResourceByName(text),
+        color = Color.White,
+        modifier = modifier
+    )
+}
 
 @Composable
 @Preview
 fun PreviewUIser() {
-    UserSetting({})
+//    UserSetting({})
     val showDialog = remember { mutableStateOf(true) }
-//    Modal(
-//        {
-//            showDialog.value = false
-//
-//        },
-//        { data ->
-//            showDialog.value = false
-//            println("data--" + data)
-//        }
-//    )
+    Modal(
+        {
+            showDialog.value = false
+
+        },
+        { data ->
+            showDialog.value = false
+            println("data--" + data)
+        }
+    )
 }

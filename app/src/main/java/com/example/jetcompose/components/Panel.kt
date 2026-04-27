@@ -49,6 +49,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.jetcompose.R
+import com.example.jetcompose.components.Panels.AdvanceSearch
 import com.example.jetcompose.components.Panels.DataOperationLog
 import com.example.jetcompose.components.Panels.OfflineDataManagement
 import com.example.jetcompose.components.Panels.UserDefinedLayer
@@ -110,6 +111,7 @@ fun Panel(
                     stringResource(R.string.menu_dataLog) -> DataOperationLog()
                     stringResource(R.string.menu_userLayer) -> UserDefinedLayer()
                     stringResource(R.string.menu_offlineData) -> OfflineDataManagement()
+                    stringResource(R.string.panel_advanced) -> AdvanceSearch()
                     else -> Text("未知面板", modifier = Modifier.padding(16.dp), fontSize = 14.sp)
                 }
             }
